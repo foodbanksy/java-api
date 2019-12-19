@@ -95,6 +95,7 @@
 
   <repositories>
     <repository>
+      <!--Needed for testing only... which we're not doing at the moment, so either remove this and remove tests or write some tests!-->
       <id>dynamodb-local</id>
       <name>DynamoDB Local Release Repository</name>
       <url>https://s3-eu-west-2.amazonaws.com/dynamodb-local/release</url>
