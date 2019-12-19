@@ -21,6 +21,18 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
         - dynamodb:CreateTable
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+    # The following is not a duplicate. It is missing the final * (and it's important it does both)
+    # this could probably be tidied up by someone who knows more about IAM resource labels.
+    - Effect: "Allow"
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:CreateTable
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}*"
 
 package:

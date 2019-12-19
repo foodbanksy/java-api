@@ -8,6 +8,6 @@ public class DynamoDbTest {
 
     @Test
     public void test() {
-        System.out.println("foo");
+        System.out.println("OK, so I didn't actually write any tests that used the local dynamodb :-(");
     }
 }
