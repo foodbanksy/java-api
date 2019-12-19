@@ -2,9 +2,8 @@ package org.foodbanksy.serverless.handlers.foodbank;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
-import org.foodbanksy.dynamodb.geo.GeoTable;
+import org.foodbanksy.dynamodb.geo.FoodBankService;
 import org.foodbanksy.serverless.ApiGatewayRequest;
 import org.foodbanksy.serverless.ApiGatewayResponse;
 import org.foodbanksy.serverless.model.FoodBank;
@@ -16,7 +15,7 @@ import java.util.Map;
 @Slf4j
 public class FindFoodBankHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
-    private GeoTable table = new GeoTable();
+    private FoodBankService service = new FoodBankService();
 
     @Override
     public ApiGatewayResponse handleRequest(ApiGatewayRequest request, Context context) {
@@ -29,8 +28,13 @@ public class FindFoodBankHandler implements RequestHandler<ApiGatewayRequest, Ap
         double longitude = Double.parseDouble(params.get("longitude"));
         double rangeInMetres = Double.parseDouble(params.get("rangeInMetres"));
 
+        if(rangeInMetres > 250_000) {
+            // Let's not go crazy - exception not caught so user won't see anything nice, but it'll stop dynomo getting nuked
+            throw new IllegalArgumentException("Range too big. 250km maximum!");
+        }
+
         log.info("Searching for Foodbanks, centred on {}:{}, range: {}", latitude, longitude, rangeInMetres);
-        List<FoodBank> foodbanks = table.findFoodBanks(latitude, longitude, rangeInMetres);
+        List<FoodBank> foodbanks = service.findFoodBanks(latitude, longitude, rangeInMetres);
         log.info("Found Foodbanks: {}", foodbanks);
 
         Map<String, String> headers = new HashMap<>();
@@ -50,7 +54,7 @@ public class FindFoodBankHandler implements RequestHandler<ApiGatewayRequest, Ap
         Map<String, String> params = new HashMap<>();
         params.put("latitude", "50");
         params.put("longitude", "0");
-        params.put("rangeInMetres", "1000");
+        params.put("rangeInMetres", "30000000");
         request.setQueryStringParameters(params);
 
         ApiGatewayResponse response = new FindFoodBankHandler().handleRequest(request, null);

@@ -3,20 +3,17 @@ package org.foodbanksy.dynamodb.geo;
 import com.amazonaws.geo.GeoDataManager;
 import com.amazonaws.geo.GeoDataManagerConfiguration;
 import com.amazonaws.geo.model.*;
-import com.amazonaws.geo.util.GeoJsonMapper;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.model.*;
 import lombok.extern.slf4j.Slf4j;
-import org.foodbanksy.serverless.model.FoodBank;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * This is a bit of a mess and could do with splitting into generic "lets-store-some-points" logic and some specific
@@ -24,6 +21,9 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class GeoTable {
+    public static final String COLUMN_RANGE_KEY = "rangeKey";
+    public static final String COLUMN_GEO_JSON = "geoJson";
+    public static final String COLUMN_NAME = "name";
     private GeoDataManager geoDataManager;
 
     public GeoTable() {
@@ -70,27 +70,27 @@ public class GeoTable {
         log.info("Table is ready");
     }
 
-    public void createFoodBank(FoodBank foodBank) {
-        GeoPoint geoPoint = new GeoPoint(foodBank.getLatitude(), foodBank.getLongitude());
+    public void createPoint(String name, double latitude, double longitude) {
+        GeoPoint geoPoint = new GeoPoint(latitude, longitude);
         // I don't know what this next line is for. Uniqueness?
         AttributeValue rangeKeyAttributeValue = new AttributeValue().withS(UUID.randomUUID().toString());
-        AttributeValue foodbankNameAttributeValue = new AttributeValue().withS(foodBank.getName());
+        AttributeValue foodbankNameAttributeValue = new AttributeValue().withS(name);
 
         PutPointRequest putPointRequest = new PutPointRequest(geoPoint, rangeKeyAttributeValue);
-        putPointRequest.getPutItemRequest().addItemEntry("name", foodbankNameAttributeValue);
+        putPointRequest.getPutItemRequest().addItemEntry(COLUMN_NAME, foodbankNameAttributeValue);
 
         PutPointResult putPointResult = geoDataManager.putPoint(putPointRequest);
 
         log.debug("Point: {}", putPointResult);
     }
 
-    private List<Map<String, AttributeValue>> queryRadius(double latitude, double longitude, double rangeInMetres) {
+    public List<Map<String, AttributeValue>> queryRadius(double latitude, double longitude, double rangeInMetres) {
         GeoPoint centerPoint = new GeoPoint(latitude, longitude);
 
         List<String> attributesToGet = new ArrayList<>();
-        attributesToGet.add("rangeKey");
-        attributesToGet.add("geoJson");
-        attributesToGet.add("name");
+        attributesToGet.add(COLUMN_RANGE_KEY);
+        attributesToGet.add(COLUMN_GEO_JSON);
+        attributesToGet.add(COLUMN_NAME);
 
         QueryRadiusRequest queryRadiusRequest = new QueryRadiusRequest(centerPoint, rangeInMetres);
         queryRadiusRequest.getQueryRequest().setAttributesToGet(attributesToGet);
@@ -98,18 +98,6 @@ public class GeoTable {
 
         log.debug("Query Radius search Result: {}", queryRadiusResult);
         return queryRadiusResult.getItem();
-    }
-
-    public List<FoodBank> findFoodBanks(double latitude, double longitude, double rangeInMetres) {
-        List<Map<String, AttributeValue>> queryResults = queryRadius(latitude, longitude, rangeInMetres);
-        return queryResults.stream()
-                .map(GeoTable::toFoodBank)
-                .collect(Collectors.toList());
-    }
-
-    private static FoodBank toFoodBank(Map<String, AttributeValue> result) {
-        GeoPoint point = GeoJsonMapper.geoPointFromString(result.get("geoJson").getS());
-        return new FoodBank(result.get("name").getS(), point.getLatitude(), point.getLongitude());
     }
 
 }

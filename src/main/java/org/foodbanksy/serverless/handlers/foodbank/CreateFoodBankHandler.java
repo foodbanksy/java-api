@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.foodbanksy.dynamodb.geo.GeoTable;
+import org.foodbanksy.dynamodb.geo.FoodBankService;
 import org.foodbanksy.serverless.ApiGatewayRequest;
 import org.foodbanksy.serverless.ApiGatewayResponse;
 import org.foodbanksy.serverless.model.FoodBank;
@@ -15,7 +15,7 @@ import java.io.IOException;
 @Slf4j
 public class CreateFoodBankHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
-    private GeoTable table = new GeoTable();
+    private FoodBankService service = new FoodBankService();
 
     @Override
     public ApiGatewayResponse handleRequest(ApiGatewayRequest request, Context context) {
@@ -27,7 +27,7 @@ public class CreateFoodBankHandler implements RequestHandler<ApiGatewayRequest, 
             throw new RuntimeException(e);
         }
         log.info("Creating Foodbank: {}", food);
-        table.createFoodBank(food);
+        service.createFoodBank(food);
 
         return ApiGatewayResponse.builder().setStatusCode(204).build();
     }
@@ -37,7 +37,7 @@ public class CreateFoodBankHandler implements RequestHandler<ApiGatewayRequest, 
      */
     public static void main(String[] args) throws JsonProcessingException {
         ApiGatewayRequest request = new ApiGatewayRequest();
-        request.setBody(new ObjectMapper().writeValueAsString(new FoodBank("Test Foodbank", 50.0d, 0.0d)));
+        request.setBody(new ObjectMapper().writeValueAsString(new FoodBank("Another", 52.0d, 0.0d)));
         new CreateFoodBankHandler().handleRequest(request, null);
     }
 
