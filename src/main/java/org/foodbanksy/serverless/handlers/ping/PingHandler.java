@@ -1,4 +1,4 @@
-package org.foodbanksy.serverless;
+package org.foodbanksy.serverless.handlers.ping;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -8,10 +8,12 @@ import org.apache.log4j.Logger;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import org.foodbanksy.serverless.ApiGatewayResponse;
+import org.foodbanksy.serverless.Response;
 
-public class Handler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
+public class PingHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
-	private static final Logger LOG = Logger.getLogger(Handler.class);
+	private static final Logger LOG = Logger.getLogger(PingHandler.class);
 
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {

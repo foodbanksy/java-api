@@ -5,11 +5,13 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 
+import lombok.ToString;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@ToString
 public class ApiGatewayResponse {
 
 	private final int statusCode;

@@ -15,7 +15,7 @@ package:
 
 functions:
   currentTime:
-    handler: org.foodbanksy.serverless.Handler
+    handler: org.foodbanksy.serverless.handlers.ping.PingHandler
     events:
       - http:
           path: ping
