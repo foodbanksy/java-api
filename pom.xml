@@ -12,6 +12,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <dynamodb.version>1.11.86</dynamodb.version>
+    <jackson.version>2.9.8</jackson.version>
   </properties>
 
   <dependencies>
@@ -30,17 +31,17 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.9.8</version>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.9.8</version>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.9.8</version>
+      <version>${jackson.version}</version>
     </dependency>
 
     <dependency>
@@ -50,8 +51,23 @@
       <scope>provided</scope>
     </dependency>
 
+    <!--Geo Libraries-->
+    <dependency>
+      <!--This is a modded version of https://github.com/amazon-archives/dynamodb-geo to use com.fasterxml-->
+      <!--RUN THE FOLLOWING COMMAND TO INSTALL THIS (or find a better way of doing it:
+        mvn install:install-file -Dfile=libs/dynamodb-geo-1.0.1.jar -DgroupId=com.amazonaws -DartifactId=dynamodb-geo -Dpackaging=jar -Dversion=1.0.1
+        -->
+      <groupId>com.amazonaws</groupId>
+      <artifactId>dynamodb-geo</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.sgr</groupId>
+      <artifactId>s2-geometry-library-java</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+
     <!--Logging-->
-    <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
@@ -62,7 +78,6 @@
       <artifactId>aws-lambda-java-log4j</artifactId>
       <version>1.0.0</version>
     </dependency>
-
 
     <!--Test Dependencies-->
     <dependency>

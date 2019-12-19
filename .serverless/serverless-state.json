@@ -94,10 +94,10 @@
               "LogGroupName": "/aws/lambda/java-api-dev-currentTime"
             }
           },
-          "DynamoDbTestLogGroup": {
+          "CreateFoodBankLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/java-api-dev-dynamoDbTest"
+              "LogGroupName": "/aws/lambda/java-api-dev-createFoodBank"
             }
           },
           "IamRoleLambdaExecution": {
@@ -219,7 +219,7 @@
                           },
                           {
                             "Fn::GetAtt": [
-                              "DynamoDbTestLogGroup",
+                              "CreateFoodBankLogGroup",
                               "Arn"
                             ]
                           }
@@ -238,7 +238,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/java-api/dev/1576755805199-2019-12-19T11:43:25.199Z/target/api.jar"
+                "S3Key": "serverless/java-api/dev/1576769985292-2019-12-19T15:39:45.292Z/target/api.jar"
               },
               "FunctionName": "java-api-dev-currentTime",
               "Handler": "org.foodbanksy.serverless.handlers.ping.PingHandler",
@@ -262,27 +262,27 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "CurrentTimeLambdaVersionzPBoJq2gnTrWyWdr5YUfICoTBTdUaKRRJnGq37gGI": {
+          "CurrentTimeLambdaVersionERUWuwuCWKpAYOrp3dU4le0Sza16kDlA1Qa29nus": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "CurrentTimeLambdaFunction"
               },
-              "CodeSha256": "PlptV3UjZ7KfSa1IAwYPQIVCqM9NeEUpAy4oVKWej9w="
+              "CodeSha256": "OZcgQJM4YLaDraDbaaDLBa6HX738oEy1Uhp1VfclCyk="
             }
           },
-          "DynamoDbTestLambdaFunction": {
+          "CreateFoodBankLambdaFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
               "Code": {
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/java-api/dev/1576755805199-2019-12-19T11:43:25.199Z/target/api.jar"
+                "S3Key": "serverless/java-api/dev/1576769985292-2019-12-19T15:39:45.292Z/target/api.jar"
               },
-              "FunctionName": "java-api-dev-dynamoDbTest",
-              "Handler": "org.foodbanksy.serverless.handlers.hacking.DynamoDbHandler",
+              "FunctionName": "java-api-dev-createFoodBank",
+              "Handler": "org.foodbanksy.serverless.handlers.foodbank.CreateFoodBankHandler",
               "MemorySize": 1024,
               "Role": {
                 "Fn::GetAtt": [
@@ -299,18 +299,18 @@
               }
             },
             "DependsOn": [
-              "DynamoDbTestLogGroup",
+              "CreateFoodBankLogGroup",
               "IamRoleLambdaExecution"
             ]
           },
-          "DynamoDbTestLambdaVersioniOnggQAgRaThcN3EgnjGEt6Ahf7bG4MnVVOOcrfRwI": {
+          "CreateFoodBankLambdaVersionyLu5TvFU4DHJYe1AplM69t4MIFtg396BVJXmoLfHw": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
-                "Ref": "DynamoDbTestLambdaFunction"
+                "Ref": "CreateFoodBankLambdaFunction"
               },
-              "CodeSha256": "PlptV3UjZ7KfSa1IAwYPQIVCqM9NeEUpAy4oVKWej9w="
+              "CodeSha256": "OZcgQJM4YLaDraDbaaDLBa6HX738oEy1Uhp1VfclCyk="
             }
           },
           "ApiGatewayRestApi": {
@@ -339,7 +339,7 @@
               }
             }
           },
-          "ApiGatewayResourceDynamo": {
+          "ApiGatewayResourceFoodbanks": {
             "Type": "AWS::ApiGateway::Resource",
             "Properties": {
               "ParentId": {
@@ -348,7 +348,7 @@
                   "RootResourceId"
                 ]
               },
-              "PathPart": "dynamo",
+              "PathPart": "foodbanks",
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
               }
@@ -397,13 +397,13 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayMethodDynamoGet": {
+          "ApiGatewayMethodFoodbanksPost": {
             "Type": "AWS::ApiGateway::Method",
             "Properties": {
-              "HttpMethod": "GET",
+              "HttpMethod": "POST",
               "RequestParameters": {},
               "ResourceId": {
-                "Ref": "ApiGatewayResourceDynamo"
+                "Ref": "ApiGatewayResourceFoodbanks"
               },
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
@@ -428,7 +428,7 @@
                       ":lambda:path/2015-03-31/functions/",
                       {
                         "Fn::GetAtt": [
-                          "DynamoDbTestLambdaFunction",
+                          "CreateFoodBankLambdaFunction",
                           "Arn"
                         ]
                       },
@@ -440,7 +440,7 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1576755802348": {
+          "ApiGatewayDeployment1576769982131": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -450,7 +450,7 @@
             },
             "DependsOn": [
               "ApiGatewayMethodPingGet",
-              "ApiGatewayMethodDynamoGet"
+              "ApiGatewayMethodFoodbanksPost"
             ]
           },
           "CurrentTimeLambdaPermissionApiGateway": {
@@ -490,12 +490,12 @@
               }
             }
           },
-          "DynamoDbTestLambdaPermissionApiGateway": {
+          "CreateFoodBankLambdaPermissionApiGateway": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
               "FunctionName": {
                 "Fn::GetAtt": [
-                  "DynamoDbTestLambdaFunction",
+                  "CreateFoodBankLambdaFunction",
                   "Arn"
                 ]
               },
@@ -621,7 +621,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/java-api/dev/1576755805199-2019-12-19T11:43:25.199Z/custom-resources.zip"
+                "S3Key": "serverless/java-api/dev/1576769985292-2019-12-19T15:39:45.292Z/custom-resources.zip"
               },
               "FunctionName": "java-api-dev-custom-resource-apigw-cw-role",
               "Handler": "apiGatewayCloudWatchRole/handler.handler",
@@ -649,13 +649,13 @@
               }
             }
           },
-          "CloudWatchLogsSubscriptionFilterDynamoDbTestLogGroup": {
+          "CloudWatchLogsSubscriptionFilterCreateFoodBankLogGroup": {
             "Type": "AWS::Logs::SubscriptionFilter",
             "Properties": {
               "DestinationArn": "arn:aws:logs:eu-west-2:802587217904:destination:bNtmbY59VVLsZvDhz9#wTY2mRpP2PFtzTZl4J#java-api#dev",
               "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
               "LogGroupName": {
-                "Ref": "DynamoDbTestLogGroup"
+                "Ref": "CreateFoodBankLogGroup"
               }
             }
           },
@@ -687,13 +687,13 @@
           "CurrentTimeLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CurrentTimeLambdaVersionzPBoJq2gnTrWyWdr5YUfICoTBTdUaKRRJnGq37gGI"
+              "Ref": "CurrentTimeLambdaVersionERUWuwuCWKpAYOrp3dU4le0Sza16kDlA1Qa29nus"
             }
           },
-          "DynamoDbTestLambdaFunctionQualifiedArn": {
+          "CreateFoodBankLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "DynamoDbTestLambdaVersioniOnggQAgRaThcN3EgnjGEt6Ahf7bG4MnVVOOcrfRwI"
+              "Ref": "CreateFoodBankLambdaVersionyLu5TvFU4DHJYe1AplM69t4MIFtg396BVJXmoLfHw"
             }
           },
           "ServiceEndpoint": {
@@ -815,18 +815,18 @@
         "runtime": "java8",
         "vpc": {}
       },
-      "dynamoDbTest": {
-        "handler": "org.foodbanksy.serverless.handlers.hacking.DynamoDbHandler",
+      "createFoodBank": {
+        "handler": "org.foodbanksy.serverless.handlers.foodbank.CreateFoodBankHandler",
         "events": [
           {
             "http": {
-              "path": "dynamo",
-              "method": "get",
+              "path": "foodbanks",
+              "method": "post",
               "integration": "AWS_PROXY"
             }
           }
         ],
-        "name": "java-api-dev-dynamoDbTest",
+        "name": "java-api-dev-createFoodBank",
         "package": {},
         "memory": 1024,
         "timeout": 6,
@@ -843,7 +843,7 @@
     "tenantUid": "bNtmbY59VVLsZvDhz9"
   },
   "package": {
-    "artifactDirectoryName": "serverless/java-api/dev/1576755805199-2019-12-19T11:43:25.199Z",
+    "artifactDirectoryName": "serverless/java-api/dev/1576769985292-2019-12-19T15:39:45.292Z",
     "artifact": "target/api.jar"
   }
 }

@@ -33,9 +33,9 @@ functions:
       - http:
           path: ping
           method: get
-  dynamoDbTest:
-    handler: org.foodbanksy.serverless.handlers.hacking.DynamoDbHandler
+  createFoodBank:
+    handler: org.foodbanksy.serverless.handlers.foodbank.CreateFoodBankHandler
     events:
       - http:
-          path: dynamo
-          method: get
+          path: foodbanks
+          method: post
