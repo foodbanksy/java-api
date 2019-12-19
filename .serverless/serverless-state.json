@@ -10,6 +10,24 @@
       "name": "aws",
       "runtime": "java8",
       "region": "eu-west-2",
+      "environment": {
+        "DYNAMODB_TABLE": "java-api-dev"
+      },
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:Query",
+            "dynamodb:Scan",
+            "dynamodb:GetItem",
+            "dynamodb:PutItem",
+            "dynamodb:UpdateItem",
+            "dynamodb:DeleteItem",
+            "dynamodb:CreateTable"
+          ],
+          "Resource": "arn:aws:dynamodb:eu-west-2:*:table/java-api-dev"
+        }
+      ],
       "versionFunctions": true,
       "remoteFunctionData": null,
       "compiledCloudFormationTemplate": {
@@ -76,6 +94,12 @@
               "LogGroupName": "/aws/lambda/java-api-dev-currentTime"
             }
           },
+          "DynamoDbTestLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/java-api-dev-dynamoDbTest"
+            }
+          },
           "IamRoleLambdaExecution": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -131,6 +155,9 @@
                             "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/java-api-dev*:*:*"
                           }
                         ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
                       }
                     ]
                   }
@@ -189,6 +216,12 @@
                               "CurrentTimeLogGroup",
                               "Arn"
                             ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "DynamoDbTestLogGroup",
+                              "Arn"
+                            ]
                           }
                         ]
                       }
@@ -205,7 +238,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/java-api/dev/1576750588389-2019-12-19T10:16:28.389Z/target/api.jar"
+                "S3Key": "serverless/java-api/dev/1576755805199-2019-12-19T11:43:25.199Z/target/api.jar"
               },
               "FunctionName": "java-api-dev-currentTime",
               "Handler": "org.foodbanksy.serverless.handlers.ping.PingHandler",
@@ -217,21 +250,67 @@
                 ]
               },
               "Runtime": "java8",
-              "Timeout": 6
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "DYNAMODB_TABLE": "java-api-dev"
+                }
+              }
             },
             "DependsOn": [
               "CurrentTimeLogGroup",
               "IamRoleLambdaExecution"
             ]
           },
-          "CurrentTimeLambdaVersions1zwkBDS8p72GrLfhHF5383nYAnYCxcLeea68GF30": {
+          "CurrentTimeLambdaVersionzPBoJq2gnTrWyWdr5YUfICoTBTdUaKRRJnGq37gGI": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "CurrentTimeLambdaFunction"
               },
-              "CodeSha256": "nsexVwo5tPF0WUNJqLmOBC1xA54Iu8joYkTaHVHVTPI="
+              "CodeSha256": "PlptV3UjZ7KfSa1IAwYPQIVCqM9NeEUpAy4oVKWej9w="
+            }
+          },
+          "DynamoDbTestLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/java-api/dev/1576755805199-2019-12-19T11:43:25.199Z/target/api.jar"
+              },
+              "FunctionName": "java-api-dev-dynamoDbTest",
+              "Handler": "org.foodbanksy.serverless.handlers.hacking.DynamoDbHandler",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "java8",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "DYNAMODB_TABLE": "java-api-dev"
+                }
+              }
+            },
+            "DependsOn": [
+              "DynamoDbTestLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "DynamoDbTestLambdaVersioniOnggQAgRaThcN3EgnjGEt6Ahf7bG4MnVVOOcrfRwI": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "DynamoDbTestLambdaFunction"
+              },
+              "CodeSha256": "PlptV3UjZ7KfSa1IAwYPQIVCqM9NeEUpAy4oVKWej9w="
             }
           },
           "ApiGatewayRestApi": {
@@ -255,6 +334,21 @@
                 ]
               },
               "PathPart": "ping",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceDynamo": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "dynamo",
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
               }
@@ -303,7 +397,50 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1576750585257": {
+          "ApiGatewayMethodDynamoGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceDynamo"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "DynamoDbTestLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayDeployment1576755802348": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -312,7 +449,8 @@
               "StageName": "dev"
             },
             "DependsOn": [
-              "ApiGatewayMethodPingGet"
+              "ApiGatewayMethodPingGet",
+              "ApiGatewayMethodDynamoGet"
             ]
           },
           "CurrentTimeLambdaPermissionApiGateway": {
@@ -321,6 +459,43 @@
               "FunctionName": {
                 "Fn::GetAtt": [
                   "CurrentTimeLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "DynamoDbTestLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "DynamoDbTestLambdaFunction",
                   "Arn"
                 ]
               },
@@ -446,7 +621,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/java-api/dev/1576750588389-2019-12-19T10:16:28.389Z/custom-resources.zip"
+                "S3Key": "serverless/java-api/dev/1576755805199-2019-12-19T11:43:25.199Z/custom-resources.zip"
               },
               "FunctionName": "java-api-dev-custom-resource-apigw-cw-role",
               "Handler": "apiGatewayCloudWatchRole/handler.handler",
@@ -471,6 +646,16 @@
               "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
               "LogGroupName": {
                 "Ref": "CurrentTimeLogGroup"
+              }
+            }
+          },
+          "CloudWatchLogsSubscriptionFilterDynamoDbTestLogGroup": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:eu-west-2:802587217904:destination:bNtmbY59VVLsZvDhz9#wTY2mRpP2PFtzTZl4J#java-api#dev",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "DynamoDbTestLogGroup"
               }
             }
           },
@@ -502,7 +687,13 @@
           "CurrentTimeLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CurrentTimeLambdaVersions1zwkBDS8p72GrLfhHF5383nYAnYCxcLeea68GF30"
+              "Ref": "CurrentTimeLambdaVersionzPBoJq2gnTrWyWdr5YUfICoTBTdUaKRRJnGq37gGI"
+            }
+          },
+          "DynamoDbTestLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "DynamoDbTestLambdaVersioniOnggQAgRaThcN3EgnjGEt6Ahf7bG4MnVVOOcrfRwI"
             }
           },
           "ServiceEndpoint": {
@@ -623,6 +814,24 @@
         "timeout": 6,
         "runtime": "java8",
         "vpc": {}
+      },
+      "dynamoDbTest": {
+        "handler": "org.foodbanksy.serverless.handlers.hacking.DynamoDbHandler",
+        "events": [
+          {
+            "http": {
+              "path": "dynamo",
+              "method": "get",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "java-api-dev-dynamoDbTest",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "java8",
+        "vpc": {}
       }
     },
     "serviceFilename": "serverless.yml",
@@ -634,7 +843,7 @@
     "tenantUid": "bNtmbY59VVLsZvDhz9"
   },
   "package": {
-    "artifactDirectoryName": "serverless/java-api/dev/1576750588389-2019-12-19T10:16:28.389Z",
+    "artifactDirectoryName": "serverless/java-api/dev/1576755805199-2019-12-19T11:43:25.199Z",
     "artifact": "target/api.jar"
   }
 }

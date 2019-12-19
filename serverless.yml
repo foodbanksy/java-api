@@ -9,7 +9,20 @@ provider:
   name: aws
   runtime: java8
   region: eu-west-2
-  
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:CreateTable
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
 package:
   artifact: target/api.jar
 
@@ -19,4 +32,10 @@ functions:
     events:
       - http:
           path: ping
+          method: get
+  dynamoDbTest:
+    handler: org.foodbanksy.serverless.handlers.hacking.DynamoDbHandler
+    events:
+      - http:
+          path: dynamo
           method: get
