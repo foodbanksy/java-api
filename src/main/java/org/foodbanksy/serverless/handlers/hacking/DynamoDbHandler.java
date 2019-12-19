@@ -13,13 +13,13 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.foodbanksy.serverless.ApiGatewayResponse;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Log4j
+@Slf4j
 public class DynamoDbHandler implements RequestHandler<DynamoDbHandler.PersonRequest, ApiGatewayResponse> {
     @Data
     @AllArgsConstructor
@@ -38,7 +38,7 @@ public class DynamoDbHandler implements RequestHandler<DynamoDbHandler.PersonReq
 
     public ApiGatewayResponse handleRequest(PersonRequest personRequest, Context context) {
 
-        log.info("Context: " + context);
+        log.info("Context: {}", context);
 
         this.initDynamoDbClient();
 

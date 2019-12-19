@@ -6,10 +6,10 @@ import java.util.Collections;
 import java.util.Map;
 
 import lombok.ToString;
-import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 
 @ToString
 public class ApiGatewayResponse {
@@ -47,9 +47,8 @@ public class ApiGatewayResponse {
 		return new Builder();
 	}
 
+	@Slf4j
 	public static class Builder {
-
-		private static final Logger LOG = Logger.getLogger(ApiGatewayResponse.Builder.class);
 
 		private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -119,7 +118,7 @@ public class ApiGatewayResponse {
 				try {
 					body = objectMapper.writeValueAsString(objectBody);
 				} catch (JsonProcessingException e) {
-					LOG.error("failed to serialize object", e);
+					log.error("failed to serialize object", e);
 					throw new RuntimeException(e);
 				}
 			} else if (binaryBody != null) {
