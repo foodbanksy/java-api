@@ -1,4 +1,4 @@
-package com.serverless;
+package org.foodbanksy.serverless;
 
 import java.util.Date;
 import java.util.HashMap;

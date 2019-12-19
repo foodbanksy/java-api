@@ -1,4 +1,4 @@
-package com.serverless;
+package org.foodbanksy.serverless;
 
 public class Response {
 
