@@ -25,7 +25,7 @@
             "dynamodb:DeleteItem",
             "dynamodb:CreateTable"
           ],
-          "Resource": "arn:aws:dynamodb:eu-west-2:*:table/java-api-dev"
+          "Resource": "arn:aws:dynamodb:eu-west-2:*:table/java-api-dev*"
         }
       ],
       "versionFunctions": true,
@@ -98,6 +98,12 @@
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
               "LogGroupName": "/aws/lambda/java-api-dev-createFoodBank"
+            }
+          },
+          "FindFoodBanksLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/java-api-dev-findFoodBanks"
             }
           },
           "IamRoleLambdaExecution": {
@@ -222,6 +228,12 @@
                               "CreateFoodBankLogGroup",
                               "Arn"
                             ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "FindFoodBanksLogGroup",
+                              "Arn"
+                            ]
                           }
                         ]
                       }
@@ -238,7 +250,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/java-api/dev/1576769985292-2019-12-19T15:39:45.292Z/target/api.jar"
+                "S3Key": "serverless/java-api/dev/1576771868032-2019-12-19T16:11:08.032Z/target/api.jar"
               },
               "FunctionName": "java-api-dev-currentTime",
               "Handler": "org.foodbanksy.serverless.handlers.ping.PingHandler",
@@ -262,14 +274,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "CurrentTimeLambdaVersionERUWuwuCWKpAYOrp3dU4le0Sza16kDlA1Qa29nus": {
+          "CurrentTimeLambdaVersionST69XbAp4PO9aDsZfW2i7U7Y523B5Ibpu7Sywo1Bneo": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "CurrentTimeLambdaFunction"
               },
-              "CodeSha256": "OZcgQJM4YLaDraDbaaDLBa6HX738oEy1Uhp1VfclCyk="
+              "CodeSha256": "1NT/5yeVC1irv0AeFlhhSu2pLYPum1IqDe6rEXrjaUI="
             }
           },
           "CreateFoodBankLambdaFunction": {
@@ -279,7 +291,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/java-api/dev/1576769985292-2019-12-19T15:39:45.292Z/target/api.jar"
+                "S3Key": "serverless/java-api/dev/1576771868032-2019-12-19T16:11:08.032Z/target/api.jar"
               },
               "FunctionName": "java-api-dev-createFoodBank",
               "Handler": "org.foodbanksy.serverless.handlers.foodbank.CreateFoodBankHandler",
@@ -303,14 +315,55 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "CreateFoodBankLambdaVersionyLu5TvFU4DHJYe1AplM69t4MIFtg396BVJXmoLfHw": {
+          "CreateFoodBankLambdaVersionffsujI1zEHI2OlNFOfWuoFqg0rKv4owtVaMRIMOCpG4": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "CreateFoodBankLambdaFunction"
               },
-              "CodeSha256": "OZcgQJM4YLaDraDbaaDLBa6HX738oEy1Uhp1VfclCyk="
+              "CodeSha256": "1NT/5yeVC1irv0AeFlhhSu2pLYPum1IqDe6rEXrjaUI="
+            }
+          },
+          "FindFoodBanksLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/java-api/dev/1576771868032-2019-12-19T16:11:08.032Z/target/api.jar"
+              },
+              "FunctionName": "java-api-dev-findFoodBanks",
+              "Handler": "org.foodbanksy.serverless.handlers.foodbank.FindFoodBankHandler",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "java8",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "DYNAMODB_TABLE": "java-api-dev"
+                }
+              }
+            },
+            "DependsOn": [
+              "FindFoodBanksLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "FindFoodBanksLambdaVersion2UpFvLmPD5l7H4DJNUYqVR92YY5LYNqtvLlvOCGX7c": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "FindFoodBanksLambdaFunction"
+              },
+              "CodeSha256": "1NT/5yeVC1irv0AeFlhhSu2pLYPum1IqDe6rEXrjaUI="
             }
           },
           "ApiGatewayRestApi": {
@@ -349,6 +402,21 @@
                 ]
               },
               "PathPart": "foodbanks",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceFind": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "find",
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
               }
@@ -440,7 +508,50 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1576769982131": {
+          "ApiGatewayMethodFindGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceFind"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "FindFoodBanksLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayDeployment1576771864793": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -450,7 +561,8 @@
             },
             "DependsOn": [
               "ApiGatewayMethodPingGet",
-              "ApiGatewayMethodFoodbanksPost"
+              "ApiGatewayMethodFoodbanksPost",
+              "ApiGatewayMethodFindGet"
             ]
           },
           "CurrentTimeLambdaPermissionApiGateway": {
@@ -496,6 +608,43 @@
               "FunctionName": {
                 "Fn::GetAtt": [
                   "CreateFoodBankLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "FindFoodBanksLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "FindFoodBanksLambdaFunction",
                   "Arn"
                 ]
               },
@@ -621,7 +770,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/java-api/dev/1576769985292-2019-12-19T15:39:45.292Z/custom-resources.zip"
+                "S3Key": "serverless/java-api/dev/1576771868032-2019-12-19T16:11:08.032Z/custom-resources.zip"
               },
               "FunctionName": "java-api-dev-custom-resource-apigw-cw-role",
               "Handler": "apiGatewayCloudWatchRole/handler.handler",
@@ -659,6 +808,16 @@
               }
             }
           },
+          "CloudWatchLogsSubscriptionFilterFindFoodBanksLogGroup": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:eu-west-2:802587217904:destination:bNtmbY59VVLsZvDhz9#wTY2mRpP2PFtzTZl4J#java-api#dev",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "FindFoodBanksLogGroup"
+              }
+            }
+          },
           "CloudWatchLogsSubscriptionFilterApiGatewayLogGroup": {
             "Type": "AWS::Logs::SubscriptionFilter",
             "Properties": {
@@ -687,13 +846,19 @@
           "CurrentTimeLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CurrentTimeLambdaVersionERUWuwuCWKpAYOrp3dU4le0Sza16kDlA1Qa29nus"
+              "Ref": "CurrentTimeLambdaVersionST69XbAp4PO9aDsZfW2i7U7Y523B5Ibpu7Sywo1Bneo"
             }
           },
           "CreateFoodBankLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CreateFoodBankLambdaVersionyLu5TvFU4DHJYe1AplM69t4MIFtg396BVJXmoLfHw"
+              "Ref": "CreateFoodBankLambdaVersionffsujI1zEHI2OlNFOfWuoFqg0rKv4owtVaMRIMOCpG4"
+            }
+          },
+          "FindFoodBanksLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "FindFoodBanksLambdaVersion2UpFvLmPD5l7H4DJNUYqVR92YY5LYNqtvLlvOCGX7c"
             }
           },
           "ServiceEndpoint": {
@@ -832,6 +997,24 @@
         "timeout": 6,
         "runtime": "java8",
         "vpc": {}
+      },
+      "findFoodBanks": {
+        "handler": "org.foodbanksy.serverless.handlers.foodbank.FindFoodBankHandler",
+        "events": [
+          {
+            "http": {
+              "path": "find",
+              "method": "get",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "java-api-dev-findFoodBanks",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "java8",
+        "vpc": {}
       }
     },
     "serviceFilename": "serverless.yml",
@@ -843,7 +1026,7 @@
     "tenantUid": "bNtmbY59VVLsZvDhz9"
   },
   "package": {
-    "artifactDirectoryName": "serverless/java-api/dev/1576769985292-2019-12-19T15:39:45.292Z",
+    "artifactDirectoryName": "serverless/java-api/dev/1576771868032-2019-12-19T16:11:08.032Z",
     "artifact": "target/api.jar"
   }
 }

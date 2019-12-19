@@ -21,7 +21,7 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
         - dynamodb:CreateTable
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}*"
 
 package:
   artifact: target/api.jar
@@ -39,3 +39,10 @@ functions:
       - http:
           path: foodbanks
           method: post
+  findFoodBanks:
+    handler: org.foodbanksy.serverless.handlers.foodbank.FindFoodBankHandler
+    events:
+      - http:
+          path: find
+          method: get
+
