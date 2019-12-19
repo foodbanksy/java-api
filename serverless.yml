@@ -58,3 +58,14 @@ functions:
           path: find
           method: get
 
+# Custom domain name:  https://serverless.com/blog/serverless-api-gateway-domain/
+# npm install serverless-domain-manager --save-dev
+plugins:
+  - serverless-domain-manager # npm install serverless-domain-manager --save-dev
+
+custom:
+  customDomain:
+    domainName: api.foodbanksy.org
+    basePath: ""
+    stage: dev
+    createRoute53Record: true

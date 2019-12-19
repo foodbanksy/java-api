@@ -266,7 +266,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/java-api/dev/1576772805104-2019-12-19T16:26:45.104Z/target/api.jar"
+                "S3Key": "serverless/java-api/dev/1576775443054-2019-12-19T17:10:43.054Z/target/api.jar"
               },
               "FunctionName": "java-api-dev-currentTime",
               "Handler": "org.foodbanksy.serverless.handlers.ping.PingHandler",
@@ -307,7 +307,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/java-api/dev/1576772805104-2019-12-19T16:26:45.104Z/target/api.jar"
+                "S3Key": "serverless/java-api/dev/1576775443054-2019-12-19T17:10:43.054Z/target/api.jar"
               },
               "FunctionName": "java-api-dev-createFoodBank",
               "Handler": "org.foodbanksy.serverless.handlers.foodbank.CreateFoodBankHandler",
@@ -348,7 +348,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/java-api/dev/1576772805104-2019-12-19T16:26:45.104Z/target/api.jar"
+                "S3Key": "serverless/java-api/dev/1576775443054-2019-12-19T17:10:43.054Z/target/api.jar"
               },
               "FunctionName": "java-api-dev-findFoodBanks",
               "Handler": "org.foodbanksy.serverless.handlers.foodbank.FindFoodBankHandler",
@@ -567,7 +567,7 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1576772801330": {
+          "ApiGatewayDeployment1576775439632": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -786,7 +786,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/java-api/dev/1576772805104-2019-12-19T16:26:45.104Z/custom-resources.zip"
+                "S3Key": "serverless/java-api/dev/1576775443054-2019-12-19T17:10:43.054Z/custom-resources.zip"
               },
               "FunctionName": "java-api-dev-custom-resource-apigw-cw-role",
               "Handler": "apiGatewayCloudWatchRole/handler.handler",
@@ -976,6 +976,17 @@
       },
       "vpc": {}
     },
+    "custom": {
+      "customDomain": {
+        "domainName": "api.foodbanksy.org",
+        "basePath": "",
+        "stage": "dev",
+        "createRoute53Record": true
+      }
+    },
+    "plugins": [
+      "serverless-domain-manager"
+    ],
     "pluginsData": {},
     "functions": {
       "currentTime": {
@@ -1042,7 +1053,7 @@
     "tenantUid": "bNtmbY59VVLsZvDhz9"
   },
   "package": {
-    "artifactDirectoryName": "serverless/java-api/dev/1576772805104-2019-12-19T16:26:45.104Z",
+    "artifactDirectoryName": "serverless/java-api/dev/1576775443054-2019-12-19T17:10:43.054Z",
     "artifact": "target/api.jar"
   }
 }
